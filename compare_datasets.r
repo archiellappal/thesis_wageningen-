@@ -66,3 +66,21 @@ colnames(hct_eight_normal) = c("Control_2h_R1","Control_2h_R2","ToxA_2h_R1","Tox
 
 #log transforming the expression values for normal distribution
 hct_eight_normal = log(hct_eight_normal, 2)
+
+#Set the working directory
+setwd("../gse_44091/")
+
+#Read the data files
+mouse_cells <- ReadAffy(cdfname = "mouse4302cdf")
+
+#Processing the data in RMA menthod with background correction
+mouse_cells_rma <- rma(mouse_cells)
+
+#creating the expression matrix(genes in rows and conditons in columns)
+mouse_cells_normal = exprs(mouse_cells_rma)
+
+#Setting the column names in the matrix
+colnames(mouse_cells_normal) = c("ToxA_2h_R1","ToxA_2h_R2","ToxA_2h_R3","ToxB_2h_R1","ToxB_2h_R2","ToxB_2h_R3","ToxAB_2h_R1","ToxAB_2h_R2","ToxAB_2h_R3","Sham_2h_R1","Sham_2h_R2","Sham_2h_R3","ToxA_6h_R1","ToxA_6h_R2","ToxA_6h_R3","ToxB_6h_R1", "ToxB_6h_R2", "ToxB_6h_R3","ToxAB_6h_R1", "Sham_6h_R1", "Sham_6h_R2", "Sham_6h_R3","ToxA_16h_R1","ToxA_16h_R2", "ToxA_16h_R3","ToxB_16h_R1", "ToxB_16h_R2", "ToxB_16h_R3","Sham_16h_R1","Sham_16h_R2", "Sham_16h_R3","Sham_16h_R4")
+
+#log transforming the expression values for normal distribution
+mouse_cells_normal = log(mouse_cells_normal, 2)
