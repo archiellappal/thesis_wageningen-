@@ -84,3 +84,22 @@ colnames(mouse_cells_normal) = c("ToxA_2h_R1","ToxA_2h_R2","ToxA_2h_R3","ToxB_2h
 
 #log transforming the expression values for normal distribution
 mouse_cells_normal = log(mouse_cells_normal, 2)
+
+
+#####Quality control checks for the expression data######
+
+#box plot fo the original data without any RMA normalization
+boxplot(hct_eight, col= "chocolate1",main="HCT8 Probe intensities")
+
+#box plot of the normlaized data
+boxplot(hct_eight_normal, col="cadetblue1",main="HCT8 RMA expression values")
+
+#creating hierarchical clutsering to see effect of genes in conditions in HCT cells
+distance <- dist(t(hct_eight_normal), method="maximum")
+clusters <- hclust(distance)
+plot(clusters)
+
+#creating hierarchical clutsering to see effect of genes in conditions in mouse cells
+distance <- dist(t(mouse_cells_normal), method="maximum")
+clusters <- hclust(distance)
+plot(clusters)
