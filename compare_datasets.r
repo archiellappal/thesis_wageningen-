@@ -103,3 +103,24 @@ plot(clusters)
 distance <- dist(t(mouse_cells_normal), method="maximum")
 clusters <- hclust(distance)
 plot(clusters)
+
+#####Finding differentially expressed genes for hct data ########
+samples.hct <- c("Control_2h","Control_2h","ToxA_2h","ToxA_2h","ToxB_2h","ToxB_2h","Control_6h","Control_6h","ToxA_6h","ToxA_6h","ToxA_6h","ToxB_6h","ToxB_6h","ToxB_6h","Control_24h","Control_24h", "ToxA_24h", "ToxA_24h","ToxB_24h", "ToxB_24h")
+samples.hct <- as.factor(samples.hct)
+design.hct <- model.matrix(~0 + samples.hct)
+colnames(design.hct) <- c("Control_24h", "Control_2h", "Control_6h", "ToxA_24h", "ToxA_2h","ToxA_6h","ToxB_24h", "ToxB_2h", "ToxB_6h")
+
+#providing the data for limma analysis
+
+#fit the linear model to the expression set
+fit.hct <- lmFit(hct_eight_normal ,design.hct)
+
+#setting up the contrast matrix for the design matrix
+contrast.matrix.hct <- makeContrasts(ToxA_24h_ToxB_2h <- ToxA_24h - ToxB_2h, ToxA_24h_ToxB_6h <- ToxA_24h - ToxB_6h, ToxA_24h_ToxB_24h <- ToxA_24h - ToxB_24h, levels = design.hct)
+
+#contrast matrix is now combined with the per-probeset linear model fit
+hct_fits <- contrasts.fit(fit.hct, contrast.matrix.hct)
+hct_ebFit <- eBayes(hct_fits)
+
+#return the top results of the contrast fit
+probeset.list.hct <- toptable(hct_ebFit, coef=1, number = 100) ##coef = 1( 2 hours), coef = 2(6 hours), coef = 3(24 hours)###
