@@ -124,3 +124,24 @@ hct_ebFit <- eBayes(hct_fits)
 
 #return the top results of the contrast fit
 probeset.list.hct <- toptable(hct_ebFit, coef=1, number = 100) ##coef = 1( 2 hours), coef = 2(6 hours), coef = 3(24 hours)###
+
+#####Finding ifferentially expressed genes for the mouse data#######
+samples.mouse <- c("ToxA_2h","ToxA_2h","ToxA_2h","ToxB_2h","ToxB_2h","ToxB_2h","ToxAB_2h","ToxAB_2h","ToxAB_2h","Sham_2h","Sham_2h","Sham_2h","ToxA_6h","ToxA_6h","ToxA_6h","ToxB_6h", "ToxB_6h", "ToxB_6h","ToxAB_6h", "Sham_6h", "Sham_6h", "Sham_6h","ToxA_16h","ToxA_16h", "ToxA_16h","ToxB_16h", "ToxB_16h", "ToxB_16h","Sham_16h","Sham_16h", "Sham_16h","Sham_16h")
+samples.mouse <- as.factor(samples.mouse)
+design.mouse <- model.matrix(~0 + samples.mouse)
+colnames(design.mouse) <- c("Sham_16h", "Sham_2h", "Sham_6h", "ToxAB_2h", "ToxAB_6h", "ToxA_16h", "ToxA_2h", "ToxA_6h", "ToxB_16h", "ToxB_2h", "ToxAB_6h")
+
+#providing the data for limma analysis
+
+#fit the linear model to the expression set
+fit.mouse <- lmFit(mouse_cells_normal ,design.mouse)
+
+#setting up the contrast matrix for the design matrix
+contrast.matrix.mouse <- makeContrasts(ToxA_2h_ToxB_2h = ToxA_2h - ToxB_2h,ToxA_16h_ToxB_16h = ToxA_16h - ToxB_16h,  levels = design.mouse)
+
+#contrast matrix is now combined with the per-probeset linear model fit
+mouse_fits <- contrasts.fit(fit.mouse, contrast.matrix.mouse)
+mouse_ebFit <- eBayes(mouse_fits)
+
+#return the top results of the contrast fit for ToxA and Tox B at 2 hours
+probeset.list.mouse <- toptable(mouse_ebFit, coef=2, number = 5000 )  ### coef = 1( 2hours), coef = 2(6 hours)###
