@@ -123,7 +123,7 @@ hct_fits <- contrasts.fit(fit.hct, contrast.matrix.hct)
 hct_ebFit <- eBayes(hct_fits)
 
 #return the top results of the contrast fit
-probeset.list.hct <- toptable(hct_ebFit, coef=1, number = 100) ##coef = 1( 2 hours), coef = 2(6 hours), coef = 3(24 hours)###
+probeset.list.hct <- toptable(hct_ebFit, coef=1, number = 1000) ##coef = 1( 2 hours), coef = 2(6 hours), coef = 3(24 hours)###
 
 #####Finding ifferentially expressed genes for the mouse data#######
 samples.mouse <- c("ToxA_2h","ToxA_2h","ToxA_2h","ToxB_2h","ToxB_2h","ToxB_2h","ToxAB_2h","ToxAB_2h","ToxAB_2h","Sham_2h","Sham_2h","Sham_2h","ToxA_6h","ToxA_6h","ToxA_6h","ToxB_6h", "ToxB_6h", "ToxB_6h","ToxAB_6h", "Sham_6h", "Sham_6h", "Sham_6h","ToxA_16h","ToxA_16h", "ToxA_16h","ToxB_16h", "ToxB_16h", "ToxB_16h","Sham_16h","Sham_16h", "Sham_16h","Sham_16h")
@@ -146,14 +146,4 @@ mouse_ebFit <- eBayes(mouse_fits)
 #return the top results of the contrast fit for ToxA and Tox B at 2 hours
 probeset.list.mouse <- toptable(mouse_ebFit, coef=2, number = 5000 )  ### coef = 1( 2hours), coef = 2(6 hours)###
 
-#Annotating the probelist of differentially expressed genes 
-probeset <- as.character(rownames(probeset.list.hct))
 
-#get the probe ids of the final probelist of the HCT8 cells and find the Entrez IDS for them 
-gene_ids <- c(getEG(c(row.names(probeset.list.hct)), "hgu133plus2"))
-
-#Bind this list as another column into the probelist 
-new_probelist <- cbind(probeset.list.hct, gene_ids)
-
-#Remove the rows where gene ids are NA 
-new_probelist <- new_probelist[complete.cases(new_probelist),]
