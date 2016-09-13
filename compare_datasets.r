@@ -23,6 +23,7 @@ install.packages("~/packages/mouse4302mmentrezgprobe_19.0.0.tar.gz", repos = NUL
 install.packages("~/packages/hgu133plus2hsentrezgcdf_19.0.0.tar.gz", repos = NULL, type = "source")
 install.packages("~/packages/hgu133plus2hsentrezg.db_19.0.0.tar.gz", repos = NULL, type = "source")
 install.packages("~/packages/hgu133plus2hsentrezgprobe_19.0.0.tar.gz", repos = NULL, type = "source")
+install.packages("~/packages/AnnBuilder_1.16.0.tar.gz", repos = NULL, type = "source")
 
 #Package for exploring oligonucleotide array analysis
 source("https://bioconductor.org/biocLite.R")
@@ -36,6 +37,8 @@ biocLite("genefilter")
 biocLite("annotate")
 biocLite("arrayQualityMetrics")
 biocLite("GenomicRanges")
+biocLite("GOSummaries")
+
 
 #Loading the libraries in the environment
 library(affy)
@@ -53,6 +56,9 @@ library(mouse4302mmentrezgprobe)
 library(hgu133plus2hsentrezgcdf)
 library(hgu133plus2hsentrezg.db)
 library(hgu133plus2hsentrezgprobe)
+library(AnnBuilder)
+library(GOsummaries)
+
 
 #Read the data files
 hct_eight <- ReadAffy(cdfname = "hgu133plus2hsentrezgcdf" )
@@ -126,7 +132,7 @@ hct_fits <- contrasts.fit(fit.hct, contrast.matrix.hct)
 hct_ebFit <- eBayes(hct_fits)
 
 #return the top results of the contrast fit
-probeset.list.hct <- toptable(hct_ebFit, coef=1, number = 10000) ##coef = 1( 2 hours), coef = 2(6 hours), coef = 3(24 hours)###
+probeset.list.hct <- toptable(hct_ebFit, coef= 1, number = 2757) ##coef = 1( 2 hours), coef = 2(6 hours), coef = 3(24 hours)###
 
 
 #####Finding ifferentially expressed genes for the mouse data#######
@@ -148,6 +154,11 @@ mouse_fits <- contrasts.fit(fit.mouse, contrast.matrix.mouse)
 mouse_ebFit <- eBayes(mouse_fits)
 
 #return the top results of the contrast fit for ToxA and Tox B at 2 hours
-probeset.list.mouse <- toptable(mouse_ebFit, coef=2, number = 50000)  ### coef = 1( 2hours), coef = 2(6 hours)###
+probeset.list.mouse <- toptable(mouse_ebFit, coef=1, number = 20000)  ### coef = 1( 2hours), coef = 2(6 hours)###
 
+#creating a list of differentially expressed genes
+list_genes_hct <- list(c(row.names(probeset.list.hct)))
+list_genes_mouse <- list(c(row.names(probeset.list.mouse)))
 
+#creating gene Ontology summaries for the list of differentially expressed genes 
+gosummary_hct <- gosummaries(list_genes_hct)
