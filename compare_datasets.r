@@ -6,11 +6,8 @@
 
 ###########
 
-#Clear the workspace in the global environment
-rm(list = ls())
-
 #Set the working directory
-setwd("/Users/ellap001/Documents/data/gse_29008/")
+setwd("/Users/ellap001/Desktop/thesis/gse_29008/")
 
 #Installing the packages
 install.packages("statmod")
@@ -94,6 +91,8 @@ colnames(mouse_cells_normal) = c("ToxA_2h_R1","ToxA_2h_R2","ToxA_2h_R3","ToxB_2h
 #log transforming the expression values for normal distribution
 mouse_cells_normal = log(mouse_cells_normal, 2)
 
+#changing the working directory to the generla folder 
+setwd("../")
 
 #####Quality control checks for the expression data######
 
@@ -125,21 +124,26 @@ colnames(design.hct) <- c("Control_24h", "Control_2h", "Control_6h", "ToxA_24h",
 fit.hct <- lmFit(hct_eight_normal ,design.hct)
 
 #setting up the contrast matrix for the design matrix
-contrast.matrix.hct <- makeContrasts(ToxA_2h_ToxB_6h = ToxA_2h - ToxB_6h, ToxA_2h_ToxB_24h = ToxA_2h - ToxB_24h, ToxA_6h_ToxB_24h <- ToxA_6h - ToxB_24h, levels=design.hct)
+contrast.matrix.hct <- makeContrasts(ToxA_2h_ToxB_2h = ToxA_2h - ToxB_2h, ToxA_6h_ToxB_6h = ToxA_6h - ToxB_6h, ToxA_24h_ToxB_24h <- ToxA_24h - ToxB_24h, levels=design.hct)
 
 #contrast matrix is now combined with the per-probeset linear model fit
 hct_fits <- contrasts.fit(fit.hct, contrast.matrix.hct)
 hct_ebFit <- eBayes(hct_fits)
 
 #return the top results of the contrast fit
-probeset.list.hct <- toptable(hct_ebFit, coef= 1, number = 2757) ##coef = 1( 2 hours), coef = 2(6 hours), coef = 3(24 hours)###
+probeset.list.hct <- toptable(hct_ebFit, coef= 3, number = 2000) ##coef = 1( 2 hours), coef = 2(6 hours), coef = 3(24 hours)###
 
+#converting log fold change to regular fold change 
+probeset.list.hct$FC <- 2^probeset.list.hct$logFC
+
+#write the differentially expressed genes to a separate table 
+write.table(probeset.list.hct, "degeneshct.txt", sep = "\t")
 
 #####Finding ifferentially expressed genes for the mouse data#######
 samples.mouse <- c("ToxA_2h","ToxA_2h","ToxA_2h","ToxB_2h","ToxB_2h","ToxB_2h","ToxAB_2h","ToxAB_2h","ToxAB_2h","Sham_2h","Sham_2h","Sham_2h","ToxA_6h","ToxA_6h","ToxA_6h","ToxB_6h", "ToxB_6h", "ToxB_6h","ToxAB_6h", "Sham_6h", "Sham_6h", "Sham_6h","ToxA_16h","ToxA_16h", "ToxA_16h","ToxB_16h", "ToxB_16h", "ToxB_16h","Sham_16h","Sham_16h", "Sham_16h","Sham_16h")
 samples.mouse <- as.factor(samples.mouse)
 design.mouse <- model.matrix(~0 + samples.mouse)
-colnames(design.mouse) <- c("Sham_16h", "Sham_2h", "Sham_6h", "ToxAB_2h", "ToxAB_6h", "ToxA_16h", "ToxA_2h", "ToxA_6h", "ToxB_16h", "ToxB_2h", "ToxAB_6h")
+colnames(design.mouse) <- c("Sham_16h", "Sham_2h", "Sham_6h","ToxA_16h", "ToxA_2h", "ToxA_6h","ToxAB_2h", "ToxAB_6h",  "ToxB_16h", "ToxB_2h", "ToxB_6h")
 
 #providing the data for limma analysis
 
@@ -147,14 +151,14 @@ colnames(design.mouse) <- c("Sham_16h", "Sham_2h", "Sham_6h", "ToxAB_2h", "ToxAB
 fit.mouse <- lmFit(mouse_cells_normal ,design.mouse)
 
 #setting up the contrast matrix for the design matrix
-contrast.matrix.mouse <- makeContrasts(ToxA_2h_ToxB_2h = ToxA_2h - ToxB_2h,ToxA_16h_ToxB_16h = ToxA_16h - ToxB_16h,  levels = design.mouse)
+contrast.matrix.mouse <- makeContrasts(ToxA_2h_ToxB_2h = ToxA_2h - ToxB_2h, ToxA_6h_ToxB_6h <- ToxA_6h - ToxB_6h, ToxA_16h_ToxB_16h = ToxA_16h - ToxB_16h,  levels = design.mouse)
 
 #contrast matrix is now combined with the per-probeset linear model fit
 mouse_fits <- contrasts.fit(fit.mouse, contrast.matrix.mouse)
 mouse_ebFit <- eBayes(mouse_fits)
 
 #return the top results of the contrast fit for ToxA and Tox B at 2 hours
-probeset.list.mouse <- toptable(mouse_ebFit, coef=1, number = 20000)  ### coef = 1( 2hours), coef = 2(6 hours)###
+probeset.list.mouse <- toptable(mouse_ebFit, coef=3, number = 20000)  ### coef = 1( 2hours), coef = 2(6 hours)###
 
 #creating a list of differentially expressed genes
 list_genes_hct <- list(c(row.names(probeset.list.hct)))
@@ -162,3 +166,5 @@ list_genes_mouse <- list(c(row.names(probeset.list.mouse)))
 
 #creating gene Ontology summaries for the list of differentially expressed genes 
 gosummary_hct <- gosummaries(list_genes_hct)
+
+##Visualising the data 
