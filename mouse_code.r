@@ -52,7 +52,7 @@ colnames(mouse_rma_exprs) <- c("ToxA_2h_R1","ToxA_2h_R2","ToxA_2h_R3","ToxB_2h_R
 mouse_normal <- log2(mouse_rma_exprs)
 
 #Printing the expression matrix 
-write.csv(mouse_normal, "../hct_data.csv")
+write.csv(mouse_normal, "../mouse_data.csv")
 
 
 #####Quality control checks for the expression data######
