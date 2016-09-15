@@ -1,107 +1,116 @@
-##########
+#########
 
-#Code to process the CDF data files, edition 2
-#Name - Architha Ellappalayam
-#Reg No - 940704222120
+#Name - Architha Ellappalayam 
+#Reg no - 9407074222120 
+#Code description - Code to load the GSE244091 dataset and normalize the values present 
 
-###########
+#########
 
-#Set the working directory
-setwd("/Users/ellap001/Desktop/thesis/gse_44091//")
-
-#Installing the packages
-install.packages("statmod")
-install.packages("arrayQualityMetrics")
-install.packages("compare")
-
-#installing the packages from BrainArray 
+#Installing the CDF files from BRAINARRAY 
 install.packages("~/packages/mouse4302mmentrezgcdf_19.0.0.tar.gz", repos = NULL, type = "source")
 install.packages("~/packages/mouse4302mmentrezg.db_19.0.0.tar.gz", repos = NULL, type = "source")
 install.packages("~/packages/mouse4302mmentrezgprobe_19.0.0.tar.gz", repos = NULL, type = "source")
 
-install.packages("~/packages/AnnBuilder_1.16.0.tar.gz", repos = NULL, type = "source")
-
-#Package for exploring oligonucleotide array analysis
+#Packages for microarray analysis are to be downloaded from BiocLite 
 source("https://bioconductor.org/biocLite.R")
 biocLite()
 
-#Downloading the packages from bioclite
+#Downloading the required packages
 biocLite("affy")
-biocLite("simpleaffy")
 biocLite("limma")
-biocLite("genefilter")
 biocLite("annotate")
-biocLite("arrayQualityMetrics")
-biocLite("GenomicRanges")
-biocLite("GOSummaries")
+biocLite("GEOquery")
+biocLite("affyPLM")
+biocLite("genefilter")
 
 
-#Loading the libraries in the environment
+#Loading the libraries in the environment 
 library(affy)
-library(simpleaffy)
-library(affyPLM)
 library(limma)
-library(genefilter)
 library(annotate)
-library(GenomicRanges)          #package to perfrom differential expression analysis
-library(statmod)
-library(RColorBrewer)         #load the color libraries
-library(mouse4302mmentrezgcdf)
-library(mouse4302mmentrezg.db)
-library(mouse4302mmentrezgprobe)
-library(hgu133plus2hsentrezgcdf)
-library(hgu133plus2hsentrezg.db)
-library(hgu133plus2hsentrezgprobe)
-library(AnnBuilder)
-library(GOsummaries)
-library(compare)
+library(GEOquery)
+library(affyPLM)
+library(genefilter)
 
-#Read the data files
-mouse_cells <- ReadAffy(cdfname = "mouse4302mmentrezgcdf")
+#Set the working directory 
+setwd("/Users/ellap001/Dropbox/thesis/gse_44091/")
 
-#Processing the data in RMA menthod with background correction
-mouse_cells_rma <- rma(mouse_cells)
+#Read the CEL files from the folder 
+mouse_raw <- ReadAffy(cdfname = "mouse4302mmentrezgcdf")
 
-#creating the expression matrix(genes in rows and conditons in columns)
-mouse_cells_normal = exprs(mouse_cells_rma)
+#Performing RMA normalization on the raw data 
+mouse_rma <- rma(mouse_raw)
 
-#Setting the column names in the matrix
-colnames(mouse_cells_normal) = c("ToxA_2h_R1","ToxA_2h_R2","ToxA_2h_R3","ToxB_2h_R1","ToxB_2h_R2","ToxB_2h_R3","ToxAB_2h_R1","ToxAB_2h_R2","ToxAB_2h_R3","Sham_2h_R1","Sham_2h_R2","Sham_2h_R3","ToxA_6h_R1","ToxA_6h_R2","ToxA_6h_R3","ToxB_6h_R1", "ToxB_6h_R2", "ToxB_6h_R3","ToxAB_6h_R1", "Sham_6h_R1", "Sham_6h_R2", "Sham_6h_R3","ToxA_16h_R1","ToxA_16h_R2", "ToxA_16h_R3","ToxB_16h_R1", "ToxB_16h_R2", "ToxB_16h_R3","Sham_16h_R1","Sham_16h_R2", "Sham_16h_R3","Sham_16h_R4")
+#Creating the expression matrix for the normalized data 
+mouse_rma_exprs <- exprs(mouse_rma)
+colnames(mouse_rma_exprs) <- c("ToxA_2h_R1","ToxA_2h_R2","ToxA_2h_R3","ToxB_2h_R1","ToxB_2h_R2","ToxB_2h_R3","ToxAB_2h_R1","ToxAB_2h_R2","ToxAB_2h_R3","Sham_2h_R1","Sham_2h_R2","Sham_2h_R3","ToxA_6h_R1","ToxA_6h_R2","ToxA_6h_R3","ToxB_6h_R1", "ToxB_6h_R2", "ToxB_6h_R3","ToxAB_6h_R1", "Sham_6h_R1", "Sham_6h_R2", "Sham_6h_R3","ToxA_16h_R1","ToxA_16h_R2", "ToxA_16h_R3","ToxB_16h_R1", "ToxB_16h_R2", "ToxB_16h_R3","Sham_16h_R1","Sham_16h_R2", "Sham_16h_R3","Sham_16h_R4")
 
-#log transforming the expression values for normal distribution
-mouse_cells_normal = log(mouse_cells_normal, 2)
+#log transforming the values in the matrix for a more normal distribution 
+mouse_normal <- log2(mouse_rma_exprs)
 
-#bind these data to the originial table 
-complete_probeset <- cbind(mouse_twohours_toxA,mouse_twohours_toxB, mouse_sixhours_toxA, mouse_sixhours_toxB,mouse_teenhours_toxA, mouse_teenhours_toxB)
+#Printing the expression matrix 
+write.csv(mouse_normal, "../hct_data.csv")
 
-#creating hierarchical clutsering to see effect of genes in conditions in mouse cells
-distance <- dist(t(mouse_cells_normal), method="maximum") 
-clusters <- hclust(distance)
-plot(clusters)
 
-#####Finding ifferentially expressed genes for the mouse data#######
-samples.mouse <- c("ToxA_2h","ToxA_2h","ToxA_2h","ToxB_2h","ToxB_2h","ToxB_2h","ToxAB_2h","ToxAB_2h","ToxAB_2h","Sham_2h","Sham_2h","Sham_2h","ToxA_6h","ToxA_6h","ToxA_6h","ToxB_6h", "ToxB_6h", "ToxB_6h","ToxAB_6h", "Sham_6h", "Sham_6h", "Sham_6h","ToxA_16h","ToxA_16h", "ToxA_16h","ToxB_16h", "ToxB_16h", "ToxB_16h","Sham_16h","Sham_16h", "Sham_16h","Sham_16h")
+#####Quality control checks for the expression data######
+
+#box plot fo the original data without any RMA normalization
+boxplot(mouse_raw, col= "chocolate1",main="HCT8- Before normlaization")
+
+#box plot of the normlaized data
+boxplot(mouse_normal, col="cadetblue1",main="HCT8 RMA expression values")
+
+#Histograms for the data before and after normalisation 
+hist_raw_mouse <- hist(hct_raw, main = "Histogram before normalisation")
+hist_rma_mouse <- hist(hct_rma, main = "Histogram after normlaisation")
+
+#creating hierarchical clutsering to see effect of genes in conditions in HCT cells
+distance.mouse <- dist(t(mouse_normal), method="maximum")
+clusters.mouse <- hclust(distance.mouse)
+plot(clusters.mouse)
+
+#Perform metric calculations on the CEL files 
+mouse_raw.qc <- fitPLM(mouse_raw)
+
+#Using affyPLM to provide more informative boxplots by Relative Log Expression 
+#The values here should be close to zero
+rle_image_mouse <- RLE(mouse_raw.qc, main = "RLE", col = "cadetblue1")
+
+#Using NUSE ( Normalised Unscaled Standard Errors)
+#The median standard error should be 1 for most genes
+nuse_image_mouse <- NUSE(mouse_raw.qc, main = "NUSE", col = "brown1")
+
+#After examining the NUSE image, the 24th value seems out of proportion and hence removed 
+mouse_normal <- mouse_normal[, -24]
+
+#####Finding differentially expressed genes for hct data ########
+samples.mouse <- c("ToxA_2h_R1","ToxA_2h_R2","ToxA_2h_R3","ToxB_2h_R1","ToxB_2h_R2","ToxB_2h_R3","ToxAB_2h_R1","ToxAB_2h_R2","ToxAB_2h_R3","Sham_2h_R1","Sham_2h_R2","Sham_2h_R3","ToxA_6h_R1","ToxA_6h_R2","ToxA_6h_R3","ToxB_6h_R1", "ToxB_6h_R2", "ToxB_6h_R3","ToxAB_6h_R1", "Sham_6h_R1", "Sham_6h_R2", "Sham_6h_R3","ToxA_16h_R1","ToxA_16h_R2", "ToxA_16h_R3","ToxB_16h_R1", "ToxB_16h_R2", "ToxB_16h_R3","Sham_16h_R1","Sham_16h_R2", "Sham_16h_R3","Sham_16h_R4")
 samples.mouse <- as.factor(samples.mouse)
+
+#The levels in the design matrix are checked by looking at samples 
 design.mouse <- model.matrix(~0 + samples.mouse)
-colnames(design.mouse) <- c("Sham_16h", "Sham_2h", "Sham_6h","ToxA_16h", "ToxA_2h", "ToxA_6h","ToxAB_2h", "ToxAB_6h",  "ToxB_16h", "ToxB_2h", "ToxB_6h")
+colnames(design.mouse) <- c("Sham_16h", "Sham_2h", "Sham_6h", "ToxAB_2h", "ToxAB_6h", "ToxA_16h", "ToxA_2h", "ToxA_6h", "ToxB_16h", "ToxB_2h", "ToxAB_6h")
 
 #providing the data for limma analysis
 
 #fit the linear model to the expression set
-fit.mouse <- lmFit(mouse_cells_normal ,design.mouse)
+fit.mouse <- lmFit(mouse_normal ,design.mouse)
 
 #setting up the contrast matrix for the design matrix
-contrast.matrix.mouse <- makeContrasts(ToxA_6h_ToxA_6h <- ToxA_6h - ToxA_6h, ToxA_16h_ToxA_16h = ToxA_16h - ToxA_16h,  levels = design.mouse)
+contrast.matrix.mouse <- makeContrasts(ToxA_2h_ToxB_2h = ToxA_2h - ToxB_2h,ToxA_16h_ToxB_16h = ToxA_16h - ToxB_16h,  levels = design.mouse)
 
 #contrast matrix is now combined with the per-probeset linear model fit
 mouse_fits <- contrasts.fit(fit.mouse, contrast.matrix.mouse)
 mouse_ebFit <- eBayes(mouse_fits)
 
-# create two lists for differentially expressed genes at 6 and sixteen hours 
-sixteen <- topTable(mouse_ebFit, coef = 2, number= 2500)
-six  <- topTable(mouse_ebFit, coef = 1, number = 2000)
+#return the top results of the contrast fit
+genelist.mouse<- toptable(mouse_ebFit, coef= 2, number = 20000) ##coef = 1( 2 hours), coef = 2(6 hours), coef = 3(24 hours)###
 
-#Create a combined list of differentially expressed genes 
-de_genes <- unique(append((row.names(six)), row.names(sixteen)))
+#Condition to check for differentially expressed genes with p-value less than 0.01
+sum(genelist.mouse$adj.P.Val < 0.01)
 
+#Converting the log fold changes to regular Fold Changes 
+genelist.mouse$FC <- 2^genelist.mouse$logFC
 
+#write the data onto a separate file 
+write.csv(genelist.mouse, "genelist_mouse.csv")
