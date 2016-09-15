@@ -31,6 +31,10 @@ library(annotate)
 library(GEOquery)
 library(affyPLM)
 library(genefilter)
+library(hgu133plus2hsentrezgcdf)
+library(hgu133plus2hsentrezg.db)
+library(hgu133plus2hsentrezgprobe)
+
 
 #Set the working directory 
 setwd("/Users/ellap001/Dropbox/thesis/gse_29008/")
