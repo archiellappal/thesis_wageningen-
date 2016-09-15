@@ -31,6 +31,9 @@ library(annotate)
 library(GEOquery)
 library(affyPLM)
 library(genefilter)
+library(mouse4302mmentrezgcdf)
+library(mouse4302mmentrezg.db)
+library(mouse4302mmentrezgprobe)
 
 #Set the working directory 
 setwd("/Users/ellap001/Dropbox/thesis/gse_44091/")
