@@ -61,8 +61,8 @@ boxplot(hct_raw, col= "chocolate1",main="HCT8- Before normlaization")
 boxplot(hct_normal, col="cadetblue1",main="HCT8 RMA expression values")
 
 #Histograms for the data before and after normalisation 
-hist_raw <- hist(hct_raw, main = "Histogram before normalisation")
-hist_rma <- hist(hct_rma, main = "Histogram after normlaisation")
+hist_raw_hct <- hist(hct_raw, main = "Histogram before normalisation")
+hist_rma_hct <- hist(hct_rma, main = "Histogram after normlaisation")
 
 #creating hierarchical clutsering to see effect of genes in conditions in HCT cells
 distance.hct <- dist(t(hct_normal), method="maximum")
@@ -74,11 +74,11 @@ hct_raw.qc <- fitPLM(hct_raw)
 
 #Using affyPLM to provide more informative boxplots by Relative Log Expression 
 #The values here should be close to zero
-rle_image <- RLE(hct_raw.qc, main = "RLE", col = "cadetblue1")
+rle_image_hct <- RLE(hct_raw.qc, main = "RLE", col = "cadetblue1")
 
 #Using NUSE ( Normalised Unscaled Standard Errors)
 #The median standard error should be 1 for most genes
-nuse_image <- NUSE(hct_raw.qc, main = "NUSE", col = "brown1")
+nuse_image_hct <- NUSE(hct_raw.qc, main = "NUSE", col = "brown1")
 
 
 #####Finding differentially expressed genes for hct data ########
