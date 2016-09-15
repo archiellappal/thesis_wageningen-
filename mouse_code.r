@@ -86,7 +86,7 @@ nuse_image_mouse <- NUSE(mouse_raw.qc, main = "NUSE", col = "brown1")
 #After examining the NUSE image, the 24th value seems out of proportion and hence removed 
 mouse_normal <- mouse_normal[, -24]
 
-#####Finding differentially expressed genes for hct data ########
+#####Finding differentially expressed genes for mouse data ########
 samples.mouse <- c("ToxA_2h_R1","ToxA_2h_R2","ToxA_2h_R3","ToxB_2h_R1","ToxB_2h_R2","ToxB_2h_R3","ToxAB_2h_R1","ToxAB_2h_R2","ToxAB_2h_R3","Sham_2h_R1","Sham_2h_R2","Sham_2h_R3","ToxA_6h_R1","ToxA_6h_R2","ToxA_6h_R3","ToxB_6h_R1", "ToxB_6h_R2", "ToxB_6h_R3","ToxAB_6h_R1", "Sham_6h_R1", "Sham_6h_R2", "Sham_6h_R3","ToxA_16h_R1","ToxA_16h_R2", "ToxA_16h_R3","ToxB_16h_R1", "ToxB_16h_R2", "ToxB_16h_R3","Sham_16h_R1","Sham_16h_R2", "Sham_16h_R3","Sham_16h_R4")
 samples.mouse <- as.factor(samples.mouse)
 
