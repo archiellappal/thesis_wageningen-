@@ -111,4 +111,5 @@ sum(genelist.hct$adj.P.Val < 0.01)
 genelist.hct$FC <- 2^genelist.hct$logFC
 
 #write the data onto a separate file 
-write.csv(genelist.hct, "genelist.csv")
+write.csv(genelist.hct, "genelist_hct.csv")
+
