@@ -37,7 +37,7 @@ library(hgu133plus2hsentrezgprobe)
 
 
 #Set the working directory 
-setwd("/Users/ellap001/Dropbox/thesis/gse_29008/")
+setwd("/Users/ellap001/Dropbox/thesis/data/gse_29008/")
 
 #Read the CEL files from the folder 
 hct_raw <- ReadAffy(cdfname = "hgu133plus2hsentrezgcdf")
@@ -53,8 +53,8 @@ colnames(hct_rma_exprs) <-  c("Control_2h_R1","Control_2h_R2","ToxA_2h_R1","ToxA
 hct_normal <- log2(hct_rma_exprs)
 
 #Printing the expression matrix 
-write.csv(hct_normal, "../hct_data.csv")
- 
+write.csv(hct_normal, "../../code_output/hct_data.csv")
+
 
 #####Quality control checks for the expression data######
 
@@ -115,5 +115,4 @@ sum(genelist.hct$adj.P.Val < 0.01)
 genelist.hct$FC <- 2^genelist.hct$logFC
 
 #write the data onto a separate file 
-write.csv(genelist.hct, "genelist_hct.csv")
-
+write.csv(genelist.hct, "../../code_output/genelist_hct.csv")
