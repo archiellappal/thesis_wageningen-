@@ -42,6 +42,18 @@ setwd("/Users/ellap001/Dropbox/thesis/data/gse_29008/")
 #Read the CEL files from the folder 
 hct_raw <- ReadAffy(cdfname = "hgu133plus2hsentrezgcdf")
 
+#Code to check the raw data for anomalies 
+#Perform metric calculations on the CEL files 
+hct_raw.qc <- fitPLM(hct_raw)
+
+#Using affyPLM to provide more informative boxplots by Relative Log Expression 
+#The values here should be close to zero
+rle_image_hct <- RLE(hct_raw.qc, main = "RLE", col = "cadetblue1")
+
+#Using NUSE ( Normalised Unscaled Standard Errors)
+#The median standard error should be 1 for most genes
+nuse_image_hct <- NUSE(hct_raw.qc, main = "NUSE", col = "brown1")
+
 #Performing RMA normalization on the raw data 
 hct_rma <- rma(hct_raw)
 
@@ -72,18 +84,6 @@ hist_rma_hct <- hist(hct_rma, main = "Histogram after normlaisation")
 distance.hct <- dist(t(hct_normal), method="maximum")
 clusters.hct <- hclust(distance.hct)
 plot(clusters.hct)
-
-#Perform metric calculations on the CEL files 
-hct_raw.qc <- fitPLM(hct_raw)
-
-#Using affyPLM to provide more informative boxplots by Relative Log Expression 
-#The values here should be close to zero
-rle_image_hct <- RLE(hct_raw.qc, main = "RLE", col = "cadetblue1")
-
-#Using NUSE ( Normalised Unscaled Standard Errors)
-#The median standard error should be 1 for most genes
-nuse_image_hct <- NUSE(hct_raw.qc, main = "NUSE", col = "brown1")
-
 
 #####Finding differentially expressed genes for hct data ########
 samples.hct <- c("Control_2h","Control_2h","ToxA_2h","ToxA_2h","ToxB_2h","ToxB_2h","Control_6h","Control_6h","ToxA_6h","ToxA_6h","ToxA_6h","ToxB_6h","ToxB_6h","ToxB_6h","Control_24h","Control_24h", "ToxA_24h", "ToxA_24h","ToxB_24h", "ToxB_24h")
@@ -116,3 +116,4 @@ genelist.hct$FC <- 2^genelist.hct$logFC
 
 #write the data onto a separate file 
 write.csv(genelist.hct, "../../code_output/genelist_hct.csv")
+
