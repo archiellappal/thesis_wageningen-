@@ -2,7 +2,7 @@
 
 #Name - Architha Ellappalayam 
 #Reg no - 9407074222120 
-#Code description - Code to load the GSE244091 dataset and normalize the values present 
+#Code description - Code to load the GSE44091 dataset and normalize the values present 
 
 #########
 
@@ -36,7 +36,7 @@ library(mouse4302mmentrezg.db)
 library(mouse4302mmentrezgprobe)
 
 #Set the working directory 
-setwd("/Users/ellap001/Dropbox/thesis/gse_44091/")
+setwd("/Users/ellap001/Dropbox/thesis/data/gse_44091/")
 
 #Read the CEL files from the folder 
 mouse_raw <- ReadAffy(cdfname = "mouse4302mmentrezgcdf")
@@ -52,7 +52,7 @@ colnames(mouse_rma_exprs) <- c("ToxA_2h_R1","ToxA_2h_R2","ToxA_2h_R3","ToxB_2h_R
 mouse_normal <- log2(mouse_rma_exprs)
 
 #Printing the expression matrix 
-write.csv(mouse_normal, "../mouse_data.csv")
+write.csv(mouse_normal, "../../code_output/mouse_data.csv")
 
 
 #####Quality control checks for the expression data######
@@ -116,4 +116,10 @@ sum(genelist.mouse$adj.P.Val < 0.01)
 genelist.mouse$FC <- 2^genelist.mouse$logFC
 
 #write the data onto a separate file 
-write.csv(genelist.mouse, "genelist_mouse.csv")
+write.csv(genelist.mouse, "../../code_output/genelist_mouse.csv")
+
+
+
+
+
+
