@@ -64,8 +64,8 @@ boxplot(mouse_raw, col= "chocolate1",main="HCT8- Before normlaization")
 boxplot(mouse_normal, col="cadetblue1",main="HCT8 RMA expression values")
 
 #Histograms for the data before and after normalisation 
-hist_raw_mouse <- hist(hct_raw, main = "Histogram before normalisation")
-hist_rma_mouse <- hist(hct_rma, main = "Histogram after normlaisation")
+hist_raw_mouse <- hist(mouse_raw, main = "Histogram before normalisation")
+hist_rma_mouse <- hist(mouse_rma, main = "Histogram after normlaisation")
 
 #creating hierarchical clutsering to see effect of genes in conditions in HCT cells
 distance.mouse <- dist(t(mouse_normal), method="maximum")
@@ -83,11 +83,8 @@ rle_image_mouse <- RLE(mouse_raw.qc, main = "RLE", col = "cadetblue1")
 #The median standard error should be 1 for most genes
 nuse_image_mouse <- NUSE(mouse_raw.qc, main = "NUSE", col = "brown1")
 
-#After examining the NUSE image, the 24th value seems out of proportion and hence removed 
-mouse_normal <- mouse_normal[, -24]
-
 #####Finding differentially expressed genes for mouse data ########
-samples.mouse <- c("ToxA_2h_R1","ToxA_2h_R2","ToxA_2h_R3","ToxB_2h_R1","ToxB_2h_R2","ToxB_2h_R3","ToxAB_2h_R1","ToxAB_2h_R2","ToxAB_2h_R3","Sham_2h_R1","Sham_2h_R2","Sham_2h_R3","ToxA_6h_R1","ToxA_6h_R2","ToxA_6h_R3","ToxB_6h_R1", "ToxB_6h_R2", "ToxB_6h_R3","ToxAB_6h_R1", "Sham_6h_R1", "Sham_6h_R2", "Sham_6h_R3","ToxA_16h_R1", "ToxA_16h_R3","ToxB_16h_R1", "ToxB_16h_R2", "ToxB_16h_R3","Sham_16h_R1","Sham_16h_R2", "Sham_16h_R3","Sham_16h_R4")
+samples.mouse <- c("ToxA_2h","ToxA_2h","ToxA_2h","ToxB_2h","ToxB_2h","ToxB_2h","ToxAB_2h","ToxAB_2h","ToxAB_2h","Sham_2h","Sham_2h","Sham_2h","ToxA_6h","ToxA_6h","ToxA_6h","ToxB_6h", "ToxB_6h", "ToxB_6h","ToxAB_6h", "Sham_6h", "Sham_6h", "Sham_6h","ToxA_16h","ToxA_16h", "ToxA_16h","ToxB_16h", "ToxB_16h", "ToxB_16h","Sham_16h","Sham_16h", "Sham_16h","Sham_16h")
 samples.mouse <- as.factor(samples.mouse)
 
 #The levels in the design matrix are checked by looking at samples 
@@ -117,9 +114,3 @@ genelist.mouse$FC <- 2^genelist.mouse$logFC
 
 #write the data onto a separate file 
 write.csv(genelist.mouse, "../../code_output/genelist_mouse.csv")
-
-
-
-
-
-
