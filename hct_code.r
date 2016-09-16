@@ -116,4 +116,3 @@ genelist.hct$FC <- 2^genelist.hct$logFC
 
 #write the data onto a separate file 
 write.csv(genelist.hct, "../../code_output/genelist_hct.csv")
-
